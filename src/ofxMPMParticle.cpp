@@ -22,6 +22,15 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  *****************************************
+ * ofxMPMFluid
+ * Modifications by Jeff Crossman
+ *   - Overloaded setup() for explicit placement of points
+ *   - Added ability to set point color
+ *   - Replaced vertex array draw method with point draw method
+ *   - Replaced grid size defines with class variables and mutator
+ *   - Updated syntax in ofxAutoControlPanel
+ * http://www.jeffcrossman.com
+ *
  * MPM FLuid Simulation Demo
  * OpenFrameworks version by Golan Levin
  * http://www.flong.com
@@ -50,11 +59,65 @@ ofxMPMParticle::ofxMPMParticle ( float inx, float iny, float inu, float inv) {
 	y   = iny;
 	u   = inu;
 	v   = inv;
-	pu = 0;
-	pv = 0; 
+	pu  = 0;
+	pv  = 0;
 	cx  = 0; 
-	cy  = 0; 
+	cy  = 0;
+    glc_r = 1.0;
+    glc_g = 1.0;
+    glc_b = 1.0;
+    glc_a = 1.0;
 
+	//px = new float[3];
+	//py = new float[3];
+	//gx = new float[3];
+	//gy = new float[3];
+}
+
+ofxMPMParticle::ofxMPMParticle ( float inx, float iny, float inu, float inv,float inglc_r, float inglc_g, float inglc_b, float inglc_a) {
+	x   = inx;
+	y   = iny;
+	u   = inu;
+	v   = inv;
+	pu  = 0;
+	pv  = 0;
+	cx  = 0;
+	cy  = 0;
+    
+    // Sanitize input
+    if (inglc_r > 1) {
+        inglc_r = 1;
+    }
+    else if (inglc_r < 0){
+        inglc_r = 0;
+    }
+    
+    if (inglc_g > 1) {
+        inglc_g = 1;
+    }
+    else if (inglc_g < 0){
+        inglc_g = 0;
+    }
+    
+    if (inglc_b > 1) {
+        inglc_b = 1;
+    }
+    else if (inglc_b < 0){
+        inglc_b = 0;
+    }
+    
+    if (inglc_a > 1) {
+        inglc_a = 1;
+    }
+    else if (inglc_a < 0){
+        inglc_a = 0;
+    }
+    
+    glc_r = inglc_r;
+    glc_g = inglc_g;
+    glc_b = inglc_b;
+    glc_a = inglc_a;
+    
 	//px = new float[3];
 	//py = new float[3];
 	//gx = new float[3];

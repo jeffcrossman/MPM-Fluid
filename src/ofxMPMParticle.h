@@ -22,6 +22,15 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  *****************************************
+ * ofxMPMFluid
+ * Modifications by Jeff Crossman
+ *   - Overloaded setup() for explicit placement of points
+ *   - Added ability to set point color
+ *   - Replaced vertex array draw method with point draw method
+ *   - Replaced grid size defines with class variables and mutator
+ *   - Updated syntax in ofxAutoControlPanel
+ * http://www.jeffcrossman.com
+ *
  * MPM FLuid Simulation Demo
  * OpenFrameworks version by Golan Levin
  * http://www.flong.com
@@ -60,6 +69,11 @@ class ofxMPMParticle {
 
 	int   cx;
 	int   cy;
+    
+    float glc_r;    // glColor Red : 0 - 1
+    float glc_g;    // glColor Green : 0 - 1
+    float glc_b;    // glColor Blue : 0 - 1
+    float glc_a;    // glColor Alpha : 0 - 1
 
 	float gu;
 	float gv;
@@ -74,5 +88,6 @@ class ofxMPMParticle {
 	
 	ofxMPMParticle ( float inx, float iny, float inu, float inv);
 
+    ofxMPMParticle ( float inx, float iny, float inu, float inv, float inglc_r, float inglc_g, float inglc_b, float inglc_a);
 };
 	

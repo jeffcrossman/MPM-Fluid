@@ -22,6 +22,15 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  *****************************************
+ * ofxMPMFluid
+ * Modifications by Jeff Crossman
+ *   - Overloaded setup() for explicit placement of points
+ *   - Added ability to set point color
+ *   - Replaced vertex array draw method with point draw method
+ *   - Replaced grid size defines with class variables and mutator
+ *   - Updated syntax in ofxAutoControlPanel
+ * http://www.jeffcrossman.com
+ *
  * MPM FLuid Simulation Demo
  * OpenFrameworks version by Golan Levin
  * http://www.flong.com
@@ -45,10 +54,6 @@
 
 #include "ofxMPMFluid.h"
 
-//TODO make varying
-#define gridSizeX 160
-#define gridSizeY 120 
-
 ofxMPMFluid::ofxMPMFluid() 
 :	densitySetting(5.0),
 	stiffness(.5),
@@ -63,7 +68,8 @@ ofxMPMFluid::ofxMPMFluid()
 	scaleFactor(1.0),
 	smoothing(1.0)
 {
-	//
+	setGridSizeX(160);
+    setGridSizeY(120);
 }
 
 void ofxMPMFluid::setup(int maxParticles){
@@ -90,7 +96,26 @@ void ofxMPMFluid::setup(int maxParticles){
 	}
 	
 	//TODO: JG add and remove obistacles through API
-	obstacles.push_back( new ofxMPMObstacle(gridSizeX * 0.75, gridSizeY * 0.75, gridSizeX * 0.075) );
+	//obstacles.push_back( new ofxMPMObstacle(gridSizeX * 0.75, gridSizeY * 0.75, gridSizeX * 0.075) );
+}
+
+void ofxMPMFluid::setup(vector<ofxMPMParticle*> inparticles){
+	maxNumParticles = inparticles.size();
+    numParticles = maxNumParticles;
+	
+	// This creates a 2-dimensional array (i.e. grid) of Node objects.
+	for (int i=0; i<gridSizeX; i++){
+		grid.push_back( vector<ofxMPMNode*>() );
+		for (int j=0; j<gridSizeY; j++){
+			grid[i].push_back( new ofxMPMNode() );
+		}
+	}
+	
+	for (int i=0; i<(gridSizeX * gridSizeY); i++){
+		activeNodes.push_back( new ofxMPMNode() );
+	}
+	
+    particles = inparticles;
 }
 
 void ofxMPMFluid::update(){
@@ -129,7 +154,7 @@ void ofxMPMFluid::update(){
 		p->pv = pv;
 		
 		
-		// N.B.: The constants below are not playthings.
+		// Quadratic interpolation kernel weights - Not meant to be changed
 		float x = (float) p->cx - p->x;
 		px[0] = (0.5F * x * x + 1.5F * x) + 1.125f;
 		gx[0] = x + 1.5F;
@@ -549,8 +574,8 @@ void ofxMPMFluid::update(){
 }
 
 void ofxMPMFluid::draw(){
-	
-	// These improve the appearance of small lines and/or points.
+    
+    // These improve the appearance of small lines and/or points.
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glEnable (GL_LINE_SMOOTH);
@@ -558,27 +583,22 @@ void ofxMPMFluid::draw(){
 	glEnable (GL_MULTISAMPLE);
 	glEnable (GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	ofSetColor(255,255,255, 204); 
-	glLineWidth(1.0); // or thicker, if you prefer
-	
-	ofPushMatrix();
-	ofScale(scaleFactor, scaleFactor, 1.0);
-	
-	// Draw the active particles as a short line, 
-	// using their velocity for their length. 
-	vector<ofVec2f> verts;
-
-	for (int ip=0; ip<numParticles; ip++) {
-		ofxMPMParticle* p = particles[ip];
-		verts.push_back(ofVec2f(p->x, p->y));
-		verts.push_back(ofVec2f(p->x - p->u, p->y - p->v));
-	}
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 0, &(verts[0].x));
-	glDrawArrays(GL_LINES, 0, verts.size());
-	glDisableClientState(GL_VERTEX_ARRAY);
-	ofPopMatrix();
+    
+    ofPushMatrix();
+    ofScale(scaleFactor, scaleFactor, 1.0);
+    
+    //set size to 1 for a group of points
+    glPointSize(1);
+    
+    for(int a=0; a < numParticles; a++) {
+        glBegin(GL_POINTS);
+        ofxMPMParticle* p = particles[a];
+        glColor4f(p->glc_r, p->glc_g, p->glc_b, p->glc_a);
+        glVertex2f(p->x, p->y);
+        glEnd();
+    }
+    
+    ofPopMatrix();
 }
 
 vector<ofxMPMParticle*>& ofxMPMFluid::getParticles(){
@@ -591,5 +611,13 @@ int ofxMPMFluid::getGridSizeX(){
 
 int ofxMPMFluid::getGridSizeY(){
 	return gridSizeY;
+}
+
+void ofxMPMFluid::setGridSizeX(int value){
+	gridSizeX = value;
+}
+
+void ofxMPMFluid::setGridSizeY(int value){
+	gridSizeY = value;
 }
 
