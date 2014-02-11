@@ -25,6 +25,7 @@
  * ofxMPMFluid
  * Modifications by Jeff Crossman
  *   - Overloaded setup() for explicit placement of points
+ *   - Ability to reset particles back to origin
  *   - Added ability to set point color
  *   - Replaced vertex array draw method with point draw method
  *   - Replaced grid size defines with class variables and mutator
@@ -60,9 +61,13 @@ class ofxMPMParticle {
 	public:
 	
 	float x;
+    float ox;   // Original X position
 	float y;
+    float oy;   // Original Y position
 	float u;
+    float ou;   // Original U
 	float v;
+    float ov;   // Original V
 	float pu; 
 	float pv;
 	float d;
@@ -89,5 +94,7 @@ class ofxMPMParticle {
 	ofxMPMParticle ( float inx, float iny, float inu, float inv);
 
     ofxMPMParticle ( float inx, float iny, float inu, float inv, float inglc_r, float inglc_g, float inglc_b, float inglc_a);
+    
+    bool reset(bool setorigin=true);
 };
 	

@@ -25,6 +25,7 @@
  * ofxMPMFluid
  * Modifications by Jeff Crossman
  *   - Overloaded setup() for explicit placement of points
+ *   - Ability to reset particles back to origin
  *   - Added ability to set point color
  *   - Replaced vertex array draw method with point draw method
  *   - Replaced grid size defines with class variables and mutator
@@ -67,6 +68,11 @@ ofxMPMParticle::ofxMPMParticle ( float inx, float iny, float inu, float inv) {
     glc_g = 1.0;
     glc_b = 1.0;
     glc_a = 1.0;
+    
+    ox = inx;
+    oy = iny;
+    ou = inu;
+    ov = inv;
 
 	//px = new float[3];
 	//py = new float[3];
@@ -118,8 +124,46 @@ ofxMPMParticle::ofxMPMParticle ( float inx, float iny, float inu, float inv,floa
     glc_b = inglc_b;
     glc_a = inglc_a;
     
+    ox = inx;
+    oy = iny;
+    ou = inu;
+    ov = inv;
+    
 	//px = new float[3];
 	//py = new float[3];
 	//gx = new float[3];
 	//gy = new float[3];
+}
+
+bool ofxMPMParticle::reset(bool setorigin){
+    
+    u   = 0;
+	v   = 0;
+	pu  = 0;
+	pv  = 0;
+	cx  = 0;
+	cy  = 0;
+    d = 0;
+    
+    gu = 0;
+    gv = 0;
+    T00 = 0;
+    T01 = 0;
+    T11 = 0;
+    
+    px[0] = px[1] = px[2] = 0;
+	py[0] = py[1] = py[2] = 0;
+	gx[0] = gx[1] = gx[2] = 0;
+	gy[0] = gy[1] = gy[2] = 0;
+
+    if (setorigin) {
+        x = ox;
+        y = oy;
+    }
+    
+    if (x == ox && y == oy) {
+        return true;
+    }
+    else
+        return false;
 }

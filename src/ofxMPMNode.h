@@ -25,6 +25,7 @@
  * ofxMPMFluid
  * Modifications by Jeff Crossman
  *   - Overloaded setup() for explicit placement of points
+ *   - Ability to reset particles back to origin
  *   - Added ability to set point color
  *   - Replaced vertex array draw method with point draw method
  *   - Replaced grid size defines with class variables and mutator
